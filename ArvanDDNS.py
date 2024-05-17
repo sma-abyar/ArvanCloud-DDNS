@@ -23,7 +23,7 @@ def save_config():
         'ApiKey': api_key_entry.get(),
         'Email': email_entry.get(),
         'ZoneId': zone_id_entry.get(),
-        '': record_name_entry.get(),
+        'RecordID': record_id_entry.get(),
         'RecordType': record_type_entry.get(),
         'Interval': interval_entry.get()
     }
@@ -44,8 +44,8 @@ def load_config():
         zone_id_entry.delete(0, tk.END)
         zone_id_entry.insert(0, config['DEFAULT'].get('ZoneId', ''))
 
-        record_name_entry.delete(0, tk.END)
-        record_name_entry.insert(0, config['DEFAULT'].get('RecordID', ''))
+        record_id_entry.delete(0, tk.END)
+        record_id_entry.insert(0, config['DEFAULT'].get('RecordID', ''))
 
         record_type_entry.delete(0, tk.END)
         record_type_entry.insert(0, config['DEFAULT'].get('RecordType', ''))
@@ -95,7 +95,7 @@ def update_dns_record():
     api_key = api_key_entry.get()
     email = email_entry.get()
     zone_id = zone_id_entry.get()
-    record_names = record_name_entry.get().split(",")  # Splitting by comma for multiple record names
+    record_names = record_id_entry.get().split(",")  # Splitting by comma for multiple record names
     record_type = record_type_entry.get()
     content = ip_label.cget("text")
 
@@ -155,7 +155,7 @@ def auto_update():
             current_ip = get_public_ip()
             ip_label.config(text=current_ip)  # Update the IP label with the current IP
             update_performed = False
-            for record_name in record_name_entry.get().split(","):
+            for record_name in record_id_entry.get().split(","):
                 record_name = record_name.strip()
                 dns_record_ip = check_dns_record(api_key_entry.get(), email_entry.get(), zone_id_entry.get(), record_name, record_type_entry.get())
                 if current_ip != dns_record_ip:
@@ -200,8 +200,8 @@ zone_id_entry = tk.Entry(root)
 zone_id_entry.pack()
 
 tk.Label(root, text="Record Name(s):").pack()
-record_name_entry = tk.Entry(root)
-record_name_entry.pack()
+record_id_entry = tk.Entry(root)
+record_id_entry.pack()
 
 tk.Label(root, text="Record Type:").pack()
 record_type_entry = tk.Entry(root)
