@@ -21,7 +21,7 @@ def save_config():
     config = configparser.ConfigParser()
     config['DEFAULT'] = {
         'ApiKey': api_key_entry.get(),
-        # 'Email': email_entry.get(),
+        'RecordName': email_entry.get(),
         'Domain': domain_entry.get(),
         'RecordID': record_id_entry.get(),
         'RecordType': record_type_entry.get(),
@@ -39,7 +39,7 @@ def load_config():
         api_key_entry.insert(0, config['DEFAULT'].get('ApiKey', ''))
 
         email_entry.delete(0, tk.END)
-        email_entry.insert(0, config['DEFAULT'].get('Email', ''))
+        email_entry.insert(0, config['DEFAULT'].get('RecordName', ''))
 
         domain_entry.delete(0, tk.END)
         domain_entry.insert(0, config['DEFAULT'].get('Domain', ''))
@@ -54,36 +54,13 @@ def load_config():
         interval_entry.insert(0, config['DEFAULT'].get('Interval', ''))
 
 
-def get_dns_record_id(api_key, email, zone_id, record_name, record_type):
+def check_dns_record(api_key, email, zone_id, record_id, record_type):
     headers = {
-        "X-Auth-Email": email,
+        "X-Auth-RecordName": email,
         "X-Auth-Key": api_key,
         "Content-Type": "application/json"
     }
-
-    try:
-        response = requests.get(f"https://api.cloudflare.com/client/v4/zones/{zone_id}/dns_records?type={record_type}&name={record_name}", headers=headers)
-        if response.status_code == 200:
-            records = response.json()["result"]
-            if records:
-                return records[0]["id"]
-            else:
-                messagebox.showinfo("Info", "No matching DNS record found")
-                return None
-        else:
-            messagebox.showerror("Error", f"Failed to fetch DNS records: {response.text}")
-            return None
-    except requests.RequestException as e:
-        messagebox.showerror("Error", f"API request failed: {e}")
-        return None
-
-def check_dns_record(api_key, email, zone_id, record_name, record_type):
-    headers = {
-        "X-Auth-Email": email,
-        "X-Auth-Key": api_key,
-        "Content-Type": "application/json"
-    }
-    response = requests.get(f"https://api.cloudflare.com/client/v4/zones/{zone_id}/dns_records?type={record_type}&name={record_name}", headers=headers)
+    response = requests.get(f"https://api.cloudflare.com/client/v4/zones/{zone_id}/dns_records?type={record_type}&name={record_id}", headers=headers)
     if response.status_code == 200:
         records = response.json()["result"]
         if records:
@@ -95,34 +72,34 @@ def update_dns_record():
     api_key = api_key_entry.get()
     email = email_entry.get()
     zone_id = domain_entry.get()
-    record_names = record_id_entry.get().split(",")  # Splitting by comma for multiple record names
+    record_ids = record_id_entry.get().split(",")  # Splitting by comma for multiple record names
     record_type = record_type_entry.get()
     content = ip_label.cget("text")
 
-    for record_name in record_names:
-        record_name = record_name.strip()  # Removing leading/trailing whitespace
-        dns_record_ip = check_dns_record(api_key, email, zone_id, record_name, record_type)
+    for record_id in record_ids:
+        record_id = record_id.strip()  # Removing leading/trailing whitespace
+        dns_record_ip = check_dns_record(api_key, email, zone_id, record_id, record_type)
         
         if dns_record_ip == content:
-            result_text.insert(tk.END, f"Info: The IP address already matches the A record for {record_name}.\n")
+            result_text.insert(tk.END, f"Info: The IP address already matches the A record for {record_id}.\n")
             continue
         elif dns_record_ip is None:
-            result_text.insert(tk.END, f"Error: Could not retrieve the DNS record for {record_name}.\n")
+            result_text.insert(tk.END, f"Error: Could not retrieve the DNS record for {record_id}.\n")
             continue
 
-        record_id = get_dns_record_id(api_key, email, zone_id, record_name, record_type)
+        record_id = get_dns_record_id(api_key, email, zone_id, record_id, record_type)
         if not record_id:
             continue
 
         headers = {
-            "X-Auth-Email": email,
+            "X-Auth-RecordName": email,
             "X-Auth-Key": api_key,
             "Content-Type": "application/json"
         }
 
         data = {
             "type": record_type,
-            "name": record_name,
+            "name": record_id,
             "content": content,
             "ttl": 1,
             "proxied": False
@@ -131,11 +108,11 @@ def update_dns_record():
         try:
             response = requests.put(f"https://api.cloudflare.com/client/v4/zones/{zone_id}/dns_records/{record_id}", json=data, headers=headers)
             if response.status_code == 200:
-                result_text.insert(tk.END, f"Success: DNS record for {record_name} updated successfully.\n")
+                result_text.insert(tk.END, f"Success: DNS record for {record_id} updated successfully.\n")
             else:
-                result_text.insert(tk.END, f"Error: Failed to update DNS record for {record_name}: {response.text}\n")
+                result_text.insert(tk.END, f"Error: Failed to update DNS record for {record_id}: {response.text}\n")
         except requests.RequestException as e:
-            result_text.insert(tk.END, f"API request failed for {record_name}: {e}\n")
+            result_text.insert(tk.END, f"API request failed for {record_id}: {e}\n")
 
 
 def auto_update():
@@ -155,9 +132,9 @@ def auto_update():
             current_ip = get_public_ip()
             ip_label.config(text=current_ip)  # Update the IP label with the current IP
             update_performed = False
-            for record_name in record_id_entry.get().split(","):
-                record_name = record_name.strip()
-                dns_record_ip = check_dns_record(api_key_entry.get(), email_entry.get(), domain_entry.get(), record_name, record_type_entry.get())
+            for record_id in record_id_entry.get().split(","):
+                record_id = record_id.strip()
+                dns_record_ip = check_dns_record(api_key_entry.get(), email_entry.get(), domain_entry.get(), record_id, record_type_entry.get())
                 if current_ip != dns_record_ip:
                     update_dns_record()
                     update_performed = True
@@ -191,7 +168,7 @@ tk.Label(root, text="API Key:").pack()
 api_key_entry = tk.Entry(root)
 api_key_entry.pack()
 
-tk.Label(root, text="Email:").pack()
+tk.Label(root, text="RecordName:").pack()
 email_entry = tk.Entry(root)
 email_entry.pack()
 
