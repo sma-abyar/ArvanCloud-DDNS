@@ -20,7 +20,7 @@ This Python script provides a graphical user interface (GUI) to update DNS recor
 Before running the script, ensure you have the following ArvanCloud account details:
 - API Key (example: `apikey <uuid>`)
 - Domain Name
-- Record Name and Record ID and Record Type you wish to update
+- Record Name, Record ID, and Record Type you wish to update.
 To find the Record ID, log in to your panel, then click the edit button of your desired record. In the search bar, you will see a URL like this: `https://panel.arvancloud.ir/cdn/{domain}/dns/{record-id}/edit`. Please copy the ID and use it.
 
 ## Usage
