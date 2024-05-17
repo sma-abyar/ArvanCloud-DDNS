@@ -23,7 +23,7 @@ def save_config():
         'ApiKey': api_key_entry.get(),
         'Email': email_entry.get(),
         'ZoneId': zone_id_entry.get(),
-        'RecordNames': record_name_entry.get(),
+        '': record_name_entry.get(),
         'RecordType': record_type_entry.get(),
         'Interval': interval_entry.get()
     }
@@ -45,7 +45,7 @@ def load_config():
         zone_id_entry.insert(0, config['DEFAULT'].get('ZoneId', ''))
 
         record_name_entry.delete(0, tk.END)
-        record_name_entry.insert(0, config['DEFAULT'].get('RecordNames', ''))
+        record_name_entry.insert(0, config['DEFAULT'].get('RecordID', ''))
 
         record_type_entry.delete(0, tk.END)
         record_type_entry.insert(0, config['DEFAULT'].get('RecordType', ''))
