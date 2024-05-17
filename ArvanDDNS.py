@@ -53,17 +53,22 @@ def load_config():
         interval_entry.delete(0, tk.END)
         interval_entry.insert(0, config['DEFAULT'].get('Interval', ''))
 
-
-def check_dns_record(api_key, domain, record_id):
+# def check_ip(ip, last_ip):
+#     if ip == last_ip:
+        
+def check_dns_record(api_key, record_name, domain, record_id):
     headers = {
         'Content-Type': 'application/json',
         'Authorization': api_key
     }
     response = requests.get(f"https://napi.arvancloud.ir/cdn/4.0/domains/{domain}/dns-records/{record_id}", headers=headers)
     if response.status_code == 200:
-        records = response.json()["result"]
-        if records:
-            return records[0]['content']  # Return the IP address of the DNS record
+        records = response.json()
+        for record in records["data"]:
+            if record["name"] == record_name:
+                ip_address = record["value"][0]["ip"]
+                return ip_address  # Return the IP address of the DNS record
+                break
     return None
 
 
@@ -76,15 +81,13 @@ def update_dns_record():
     content = ip_label.cget("text")
 
     record_id = record_id.strip()  # Removing leading/trailing whitespace
-    # dns_record_ip = check_dns_record(api_key, domain, record_id)
+    # dns_record_ip = check_dns_record(api_key, record_name, domain, record_id)
     
     # if dns_record_ip == content:
     #     result_text.insert(tk.END, f"Info: The IP address already matches the A record for {record_id}.\n")
 
     # elif dns_record_ip is None:
     #     result_text.insert(tk.END, f"Error: Could not retrieve the DNS record for {record_id}.\n")
-
-    # record_id = get_dns_record_id(api_key, record_name, domain, record_id, record_type)
 
     headers = {
         'Content-Type': 'application/json',
@@ -94,7 +97,7 @@ def update_dns_record():
     data = {
         "value": [
             {
-                "ip": get_public_ip(),
+                "ip": content,
                 "port": 80,
                 "weight": 1000,
                 "country": "US"
@@ -110,16 +113,18 @@ def update_dns_record():
             "order": "none",
             "geo_filter": "none"
         }
+
 }
 
     try:
         response = requests.put(f"https://napi.arvancloud.ir/cdn/4.0/domains/{domain}/dns-records/{record_id}", json=data, headers=headers)
         if response.status_code == 200:
-            result_text.insert(tk.END, f"Success: DNS record for {record_id} updated successfully.\n")
+            result_text.insert(tk.END, f"Success: DNS record for {record_name} updated successfully.\n")
+            last_ip = content
         else:
-            result_text.insert(tk.END, f"Error: Failed to update DNS record for {record_id}: {response.text}\n")
+            result_text.insert(tk.END, f"Error: Failed to update DNS record for {record_name}: {response.text}\n")
     except requests.RequestException as e:
-        result_text.insert(tk.END, f"API request failed for {record_id}: {e}\n")
+        result_text.insert(tk.END, f"API request failed for {record_name}: {e}\n")
 
 
 def auto_update():
@@ -138,12 +143,12 @@ def auto_update():
         if auto_update_flag:
             current_ip = get_public_ip()
             ip_label.config(text=current_ip)  # Update the IP label with the current IP
-            update_performed = False
+            # update_performed = False
             record_id = record_id.strip()
             # dns_record_ip = check_dns_record(api_key_entry.get(), domain_entry.get(), record_id)
             # if current_ip != dns_record_ip:
             update_dns_record()
-            update_performed = True
+            # update_performed = True
             # if not update_performed:
                 # result_text.insert(tk.END, f"No update necessary at {time.strftime('%Y-%m-%d %H:%M:%S')}.\n")
         countdown_label.config(text="Update check completed.")
