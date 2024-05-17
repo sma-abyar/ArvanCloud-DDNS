@@ -21,8 +21,8 @@ def save_config():
     config = configparser.ConfigParser()
     config['DEFAULT'] = {
         'ApiKey': api_key_entry.get(),
-        'Email': email_entry.get(),
-        'ZoneId': zone_id_entry.get(),
+        # 'Email': email_entry.get(),
+        'Domain': domain_entry.get(),
         'RecordID': record_id_entry.get(),
         'RecordType': record_type_entry.get(),
         'Interval': interval_entry.get()
@@ -41,8 +41,8 @@ def load_config():
         email_entry.delete(0, tk.END)
         email_entry.insert(0, config['DEFAULT'].get('Email', ''))
 
-        zone_id_entry.delete(0, tk.END)
-        zone_id_entry.insert(0, config['DEFAULT'].get('ZoneId', ''))
+        domain_entry.delete(0, tk.END)
+        domain_entry.insert(0, config['DEFAULT'].get('Domain', ''))
 
         record_id_entry.delete(0, tk.END)
         record_id_entry.insert(0, config['DEFAULT'].get('RecordID', ''))
@@ -94,7 +94,7 @@ def check_dns_record(api_key, email, zone_id, record_name, record_type):
 def update_dns_record():
     api_key = api_key_entry.get()
     email = email_entry.get()
-    zone_id = zone_id_entry.get()
+    zone_id = domain_entry.get()
     record_names = record_id_entry.get().split(",")  # Splitting by comma for multiple record names
     record_type = record_type_entry.get()
     content = ip_label.cget("text")
@@ -157,7 +157,7 @@ def auto_update():
             update_performed = False
             for record_name in record_id_entry.get().split(","):
                 record_name = record_name.strip()
-                dns_record_ip = check_dns_record(api_key_entry.get(), email_entry.get(), zone_id_entry.get(), record_name, record_type_entry.get())
+                dns_record_ip = check_dns_record(api_key_entry.get(), email_entry.get(), domain_entry.get(), record_name, record_type_entry.get())
                 if current_ip != dns_record_ip:
                     update_dns_record()
                     update_performed = True
@@ -196,8 +196,8 @@ email_entry = tk.Entry(root)
 email_entry.pack()
 
 tk.Label(root, text="Zone ID:").pack()
-zone_id_entry = tk.Entry(root)
-zone_id_entry.pack()
+domain_entry = tk.Entry(root)
+domain_entry.pack()
 
 tk.Label(root, text="Record Name(s):").pack()
 record_id_entry = tk.Entry(root)
