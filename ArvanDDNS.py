@@ -71,6 +71,7 @@ def check_dns_record(api_key, record_name, domain, record_id):
                 break
     return None
 
+# last_ip = None
 
 def update_dns_record():
     api_key = api_key_entry.get()
@@ -81,6 +82,8 @@ def update_dns_record():
     content = ip_label.cget("text")
 
     record_id = record_id.strip()  # Removing leading/trailing whitespace
+    # if last_ip == content:
+    #     result_text.insert(tk.END, f"Info: The IP address already matches the A record for {record_name}.\n")
     # dns_record_ip = check_dns_record(api_key, record_name, domain, record_id)
     
     # if dns_record_ip == content:
@@ -130,7 +133,10 @@ def update_dns_record():
 def auto_update():
     global auto_update_flag
     auto_update_flag = True
-    interval = float(interval_entry.get()) * 60  # Convert minutes to seconds
+    interval_str = interval_entry.get()
+    interval = float(interval_str) * 60 if interval_str else 0  # Convert minutes to seconds
+    if interval == 0:
+        auto_update_flag = False
     while auto_update_flag:
         for remaining in range(int(interval), 0, -1):
             mins, secs = divmod(remaining, 60)
@@ -144,7 +150,7 @@ def auto_update():
             current_ip = get_public_ip()
             ip_label.config(text=current_ip)  # Update the IP label with the current IP
             # update_performed = False
-            record_id = record_id.strip()
+            # record_id = record_id.strip()
             # dns_record_ip = check_dns_record(api_key_entry.get(), domain_entry.get(), record_id)
             # if current_ip != dns_record_ip:
             update_dns_record()
