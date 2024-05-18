@@ -53,8 +53,6 @@ def load_config():
         interval_entry.delete(0, tk.END)
         interval_entry.insert(0, config['DEFAULT'].get('Interval', ''))
 
-# def check_ip(ip, last_ip):
-#     if ip == last_ip:
         
 def check_dns_record(api_key, domain, record_id):
     headers = {
