@@ -140,6 +140,7 @@ def auto_update():
             if not auto_update_flag:
                 break
 
+        countdown_label.config(text="Checking...")
         if auto_update_flag:
             current_ip = get_public_ip()
             ip_label.config(text=current_ip)  # Update the IP label with the current IP
