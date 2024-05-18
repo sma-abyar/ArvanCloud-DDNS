@@ -61,17 +61,12 @@ def check_dns_record(api_key, record_name, domain, record_id):
         'Content-Type': 'application/json',
         'Authorization': api_key
     }
-    # response = requests.get(f"https://napi.arvancloud.ir/cdn/4.0/domains/{domain}/dns-records/{record_id}", headers=headers)
-    response = requests.get(f"http://ip-api.com/json/{record_name}.{domain}?fields=status,query", headers=headers)
+    response = requests.get(f"https://napi.arvancloud.ir/cdn/4.0/domains/{domain}/dns-records/{record_id}", headers=headers)
+    # response = requests.get(f"http://ip-api.com/json/{record_name}.{domain}?fields=status,query", headers=headers)
     if response.status_code == 200:
         records = response.json()
-        print(records)
-        return records["query"] if records["status"] == "success" else None
-            # for record in records["data"]:
-            #     if record["name"] == record_name:
-            #         ip_address = record["value"][0]["ip"]
-            #         return ip_address  # Return the IP address of the DNS record
-            #         break
+        print(records["data"]["value"][0]["ip"])
+        return records["data"]["value"][0]["ip"]
     return None
 
 def update_dns_record():
