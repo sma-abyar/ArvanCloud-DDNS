@@ -56,16 +56,14 @@ def load_config():
 # def check_ip(ip, last_ip):
 #     if ip == last_ip:
         
-def check_dns_record(api_key, record_name, domain, record_id):
+def check_dns_record(api_key, domain, record_id):
     headers = {
         'Content-Type': 'application/json',
         'Authorization': api_key
     }
     response = requests.get(f"https://napi.arvancloud.ir/cdn/4.0/domains/{domain}/dns-records/{record_id}", headers=headers)
-    # response = requests.get(f"http://ip-api.com/json/{record_name}.{domain}?fields=status,query", headers=headers)
     if response.status_code == 200:
         records = response.json()
-        print(records["data"]["value"][0]["ip"])
         return records["data"]["value"][0]["ip"]
     return None
 
@@ -78,7 +76,7 @@ def update_dns_record():
     current_ip = ip_label.cget("text")
 
     record_id = record_id.strip()  # Removing leading/trailing whitespace
-    dns_record_ip = check_dns_record(api_key, record_name, domain, record_id)
+    dns_record_ip = check_dns_record(api_key, domain, record_id)
     
     if dns_record_ip == current_ip:
         result_text.insert(tk.END, f"Info: The IP address already matches the A record for {record_name} ({dns_record_ip}).\n")
@@ -128,6 +126,7 @@ def update_dns_record():
 def auto_update():
     global auto_update_flag
     auto_update_flag = True
+    record_id = record_id_entry.get()
     interval_str = interval_entry.get()
     interval = float(interval_str) * 60 if interval_str else 0  # Convert minutes to seconds
     if interval == 0:
