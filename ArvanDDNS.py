@@ -71,7 +71,7 @@ def update_dns_record():
     domain = domain_entry.get()
     record_id = record_id_entry.get()
     record_type = record_type_entry.get()
-    current_ip = ip_label.cget("text")
+    current_ip = get_public_ip()
 
     record_id = record_id.strip()  # Removing leading/trailing whitespace
     dns_record_ip = check_dns_record(api_key, domain, record_id)
