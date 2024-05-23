@@ -172,23 +172,23 @@ load_config_button.pack(pady=5)
 
 # Input Fields with Labels
 ttk.Label(root, text="API Key:").pack(pady=2)
-api_key_entry = ttk.Entry(root, width=40)
+api_key_entry = ttk.Entry(root, width=30)
 api_key_entry.pack()
 
 ttk.Label(root, text="Record Name:").pack(pady=2)
-record_name_entry = ttk.Entry(root, width=40)
+record_name_entry = ttk.Entry(root, width=30)
 record_name_entry.pack()
 
 ttk.Label(root, text="Domain:").pack(pady=2)
-domain_entry = ttk.Entry(root, width=40)
+domain_entry = ttk.Entry(root, width=30)
 domain_entry.pack()
 
 ttk.Label(root, text="Record ID:").pack(pady=2)
-record_id_entry = ttk.Entry(root, width=40)
+record_id_entry = ttk.Entry(root, width=30)
 record_id_entry.pack()
 
 ttk.Label(root, text="Record Type:").pack(pady=2)
-record_type_entry = ttk.Entry(root, width=40)
+record_type_entry = ttk.Entry(root, width=30)
 record_type_entry.pack()
 
 # Update Button
@@ -197,7 +197,7 @@ update_button.pack(pady=5)
 
 # Interval Input Field
 ttk.Label(root, text="Update Interval (minutes):").pack(pady=2)
-interval_entry = ttk.Entry(root, width=40)
+interval_entry = ttk.Entry(root, width=30)
 interval_entry.pack()
 
 # Start and Stop Auto-Update Buttons
@@ -208,7 +208,7 @@ stop_auto_update_button = ttk.Button(root, text="Stop Auto Update", command=stop
 stop_auto_update_button.pack(pady=5)
 
 # Result Text Widget
-result_text = tk.Text(root, height=10, width=60)
+result_text = tk.Text(root, height=4, width=40)
 result_text.pack(pady=10)
 
 # Countdown timer
